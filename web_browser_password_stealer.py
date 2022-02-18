@@ -6,6 +6,8 @@ import re
 import ctypes
 import sys
 
+file = "mozilla_passwords.txt" # File to store Mozilla passwords
+
 OS = [
     {
         "Windows": {
@@ -166,10 +168,11 @@ def decrypt_data(nsslib, encrypted_data):
 
 
 def display_plain_data(decrypted_profiles, nsslib):
-    for profile in decrypted_profiles:
-        for key, value in profile.items():
+    for p in decrypted_profiles:
+        for key, value in p.items():
+            profile = key.split("/")[-1]
             print(
-                str(" Profile " + key.split("/")[-1] + " ").center(
+                str(" Profile " + profile + " ").center(
                     os.get_terminal_size().columns, "#"
                 )
                 + "\n"
@@ -187,6 +190,12 @@ def display_plain_data(decrypted_profiles, nsslib):
                 for v in value
             ]
 
+
+def store_plain_data(decrypted_profiles):
+    with open(file, "w") as f:
+        f.write(json.dumps(decrypted_profiles, indent=4))
+    print("Mozilla passwords saved in " + file)
+
     if nsslib.NSS_Shutdown() != 0:
         sys.exit("NSS shutdown failed!")
 
@@ -197,3 +206,6 @@ if __name__ == "__main__":
     profiles = get_profiles(basepath)
     decrypted_profiles = decrypt_profiles(nsslib, profiles)
     display_plain_data(decrypted_profiles, nsslib)
+    store_plain_data(decrypted_profiles)
+
+    input() # To keep the window open at the end of the program
