@@ -52,7 +52,7 @@ OS = [
         }
     },
     {
-        "Mac": {
+        "Darwin": {
             "Firefox": {
                 "path": "Library/Application Support/Firefox",
                 "dll": "libnss3.dylib",
