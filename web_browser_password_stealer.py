@@ -6,7 +6,7 @@ import re
 import ctypes
 import sys
 
-file = "mozilla_passwords.txt" # File to store Mozilla passwords
+file = "mozilla_passwords.txt"  # File to store Mozilla passwords
 
 OS = [
     {
@@ -17,7 +17,8 @@ OS = [
                 "locations": [
                     "",
                     os.path.expanduser("~\\AppData\\Local\\Mozilla Firefox"),
-                    os.path.expanduser("~\\AppData\\Local\\Mozilla Thunderbird"),
+                    os.path.expanduser(
+                        "~\\AppData\\Local\\Mozilla Thunderbird"),
                     os.path.expanduser("~\\AppData\\Local\\Nightly"),
                     os.path.expanduser("~\\AppData\\Local\\SeaMonkey"),
                     os.path.expanduser("~\\AppData\\Local\\Waterfox"),
@@ -127,7 +128,7 @@ def decrypt_profiles(nsslib, profiles):
         logins = os.path.join(profile, "logins.json")
         if os.path.isfile(logins):
 
-            if nsslib.NSS_Init(profile.encode("utf8")) == 0:
+            if nsslib.NSS_Init(profile.encode("latin1")) == 0:
                 with open(logins, "r") as f:
                     data = json.load(f)
 
@@ -163,11 +164,13 @@ def decrypt_data(nsslib, encrypted_data):
         != 0
     ):
         print("[X] PK11SDR_Decrypt failed!")
+    try:
+        return ctypes.string_at(plain_text.data, plain_text.len).decode("latin1")
+    except:
+        return "[ERROR DECODING]"
 
-    return ctypes.string_at(plain_text.data, plain_text.len).decode("utf8")
 
-
-def display_plain_data(decrypted_profiles, nsslib):
+def display_plain_data(decrypted_profiles):
     for p in decrypted_profiles:
         for key, value in p.items():
             profile = key.split("/")[-1]
@@ -205,7 +208,7 @@ if __name__ == "__main__":
     nsslib = initialization(system)
     profiles = get_profiles(basepath)
     decrypted_profiles = decrypt_profiles(nsslib, profiles)
-    display_plain_data(decrypted_profiles, nsslib)
+    display_plain_data(decrypted_profiles)
     store_plain_data(decrypted_profiles)
 
-    input() # To keep the window open at the end of the program
+    input()  # To keep the window open at the end of the program
