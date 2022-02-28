@@ -174,24 +174,14 @@ def display_plain_data(decrypted_profiles):
     for p in decrypted_profiles:
         for key, value in p.items():
             profile = key.split("/")[-1]
-            print(
-                str(" Profile " + profile + " ").center(
-                    os.get_terminal_size().columns, "#"
-                )
-                + "\n"
-            )
-            [
-                print(
-                    "Hostname: "
-                    + v["Hostname"]
-                    + "\nUsername: "
-                    + v["Username"]
-                    + "\nPassword: "
-                    + v["Password"]
-                    + "\n"
-                )
-                for v in value
-            ]
+
+            print(f" Profile {profile} ".center(
+                os.get_terminal_size().columns, "#"))
+
+            [print("Hostname: " + v["Hostname"]
+                   + "\nUsername: " + v["Username"]
+                   + "\nPassword: " + v["Password"] + "\n")
+                for v in value]
 
 
 def store_plain_data(decrypted_profiles):
